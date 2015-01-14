@@ -1,0 +1,55 @@
+THEME
+- steam punk
+- air ships 
+- tattoos style/sailor jerry
+- all top down
+- 8bit style?
+
+
+CONCEPT
+- there should be wind/weather...
+- get gold by destroying things
+- player can only control direction of ship and collect gold before it falls down
+- whenever a piece of a ship or city becomes destroyed it explodes in coins
+- coins fall as damage is dealt
+- play vs. players or floating cities
+- weapons have range, fire rate, and accuracy
+- weapons all fire automatically
+- huge slow ships vs. small fast ones
+- player should be able to zoom in and zoom out
+- can fight every few hours
+- player selects targets from a map
+	- gets rough overview
+- ships have a drift to them while they move; constantly need to adjust
+	- big ships are sluggish
+	- small ships react quickly
+
+
+THE SHIP
+- ship must be able to float and fly to sail
+- can be named
+- can fly a specific flag
+- can be found on a map
+- main components
+	- steering wheel (captain's spot)
+- upgrades
+	- ship platform
+		- increase weight of ship
+		- wood
+		- metal
+	- engine
+		- increase speed of ship
+		- sails
+		- steam
+		- diesel
+		- nuclear
+	- balloons
+		- keep ship afloat
+	- weapons
+		- harpoons
+		- large cannons
+		- flame throwers
+		- small repeating cannons
+		- ramming items?
+	- second level
+		- second row of guns

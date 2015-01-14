@@ -1,0 +1,321 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Air Pirates</title>
+</head>
+
+<body>
+</body>
+
+<script language="javascript">
+
+	//to do
+		//larger ship
+		//full screen game
+		//moving the ship
+			//wind?
+		//shooting
+			//random hit/miss
+			//against specific points on enemy ship
+			//check if ship is hit
+				//if ship is hit
+				//cannon also blows up that section of deck
+					//simpler
+
+		//multiple sections
+		//multiple monsters
+
+	// Create the canvas
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext("2d");
+
+
+	canvas.width = 512;
+	canvas.height = 480;
+
+	document.body.appendChild(canvas);
+
+	var directionHolder = {
+					x:0,
+					y:0
+				};
+
+
+	var ship = {
+		speed: 180,
+		parts: {
+			deck: [
+				{
+					x:64,
+					y:128
+				},
+				{
+					x:64,
+					y:160
+				},
+				{
+					x:64,
+					y:192
+				},
+				{
+					x:64,
+					y:224
+				},
+				{
+					x:96,
+					y:96
+				},
+				{
+					x:96,
+					y:128
+				},
+				{
+					x:96,
+					y:160
+				},
+				{
+					x:96,
+					y:192
+				},
+				{
+					x:96,
+					y:224
+				},
+				{
+					x:128,
+					y:128
+				},
+				{
+					x:128,
+					y:160
+				},
+				{
+					x:128,
+					y:192
+				},
+				{
+					x:128,
+					y:224
+				},
+				{
+					x:128,
+					y:224
+				}
+			],
+			cannon: [
+				{
+					x:128,
+					y:128,
+					direction: "E",
+					range: 128
+				},
+				{
+					x:128,
+					y:192,
+					direction: "E",
+					range: 224
+				},
+			]
+		}
+	}
+
+	// console.log(ship.parts);
+
+	// for (var i=0; i<ship.parts.deck.length; i++){
+	// 	console.log(ship.parts.deck[i]);
+
+	// }
+	
+	// console.log(document.getElementById("measureMe").clientHeight);
+
+	// Background image
+	var bgReady = false;
+	var bgImage = new Image();
+	bgImage.onload = function () {
+		bgReady = true;
+	};
+	bgImage.src = "images/background.png";
+
+	// Hero image
+	// var heroReady = false;
+	// var heroImage = new Image();
+	// heroImage.onload = function () {
+	// 	heroReady = true;
+	// };
+	// heroImage.src = "images/hero.png";
+
+	var deckImageReady = false;
+	var deckImage = new Image();
+	deckImageReady.onload = function () {
+		deckImageReady = true;
+	};
+	deckImage.src = "images/deck.png";
+
+	var cannonImageReady = false;
+	var cannonImage = new Image();
+	cannonImageReady.onload = function () {
+		cannonImageReady = true;
+	};
+	cannonImage.src = "images/cannon.png";
+
+	// Monster image
+	var monsterReady = false;
+	var monsterImage = new Image();
+	monsterImage.onload = function () {
+		monsterReady = true;
+	};
+	monsterImage.src = "images/monster.png";
+
+	// Game objects
+	var hero = {
+		speed: 256 // movement in pixels per second
+	};
+	var monster = {};
+	var monstersCaught = 0;
+	// Handle keyboard controls
+	var keysDown = {};
+
+	addEventListener("keydown", function (e) {
+		keysDown[e.keyCode] = true;
+	}, false);
+
+	addEventListener("keyup", function (e) {
+		delete keysDown[e.keyCode];
+	}, false);
+
+	// Reset the game when the player catches a monster
+	var reset = function () {
+		// hero.x = canvas.width / 2;
+		// hero.y = canvas.height / 2;
+
+		// console.log("hey there");
+		//don't really need to worry about this too much
+		// for (var i=0; i<ship.parts.deck.length; i++){
+		// 	console.log(ship.parts.deck[i]);
+		// 	// ctx.drawImage(heroImage, (ship.parts.deck[i].x), (ship.parts.deck[i].y));
+		// }
+
+		// Throw the monster somewhere on the screen randomly
+		// for (var i=0; i<2; i++){
+			// console.log("heya");
+			monster.x = 32 + (Math.random() * (canvas.width - 64));
+			monster.y = 32 + (Math.random() * (canvas.height - 64));
+		// }
+	};
+
+	// Update game objects
+	var update = function (modifier) {
+
+		// wind or drift
+		// hero.y -= hero.speed * (modifier/10);
+
+		if (38 in keysDown) { // Player holding up
+			// hero.y -= hero.speed * modifier;
+			directionHolder.y -= Math.floor(ship.speed * modifier);
+		}
+		if (40 in keysDown) { // Player holding down
+			// hero.y += hero.speed * modifier;
+			directionHolder.y += Math.floor(ship.speed * modifier);
+		}
+		if (37 in keysDown) { // Player holding left
+			// hero.x -= hero.speed * modifier;
+			directionHolder.x -= Math.floor(ship.speed * modifier);
+		}
+		if (39 in keysDown) { // Player holding right
+			// hero.x += hero.speed * modifier;
+			directionHolder.x += Math.floor(ship.speed * modifier);
+		}
+
+		// console.log(hero.x);
+		// console.log(hero.y);
+
+
+		// console.log(hero.y);
+		// if ((hero.y >= monster.y -50) && (hero.y <= monster.y)){
+		// 	//this will hit the general area
+		// 	console.log("y is hit!");
+		// }
+
+		// console.log(hero.x);
+		// console.log(monster.x + 10);
+
+		// if ((hero.y >= monster.y -50) && (hero.y <= monster.y) && (hero.x >= monster.x + 100) && (hero.x <= monster.x)){
+		// 	//this will hit the general area
+		// 	console.log("Y hit!");
+		// }
+
+		// if ((hero.y >= monster.y -50) && (hero.y <= monster.y)){
+		// 	//this will hit the general area
+		// 	console.log("Y hit!");
+		// }
+
+
+		//this needs to fire on the CANNON interval, not the moving interval...
+		// if ((hero.y >= monster.y -50) && (hero.y <= monster.y) && (hero.x >= monster.x - 150) && (hero.x <= monster.x-32)){
+		// 	//this will hit the general area
+		// 	console.log("cannon hit!");
+		// }
+
+
+		// Are they touching?
+		// for (var i=0; i<ship.parts.deck.length; i++){
+		// 	if ((ship.parts.deck[i].x + directionHolder.x) <= (monster.x + 32) && monster.x <= ((ship.parts.deck[i].x + directionHolder.x) + 32) && (ship.parts.deck[i].y + directionHolder.y) <= (monster.y + 32) && monster.y <= ((ship.parts.deck[i].x + directionHolder.x) + 32)) {
+		// 		++monstersCaught;
+		// 		reset();
+		// 	}
+		// }
+	};
+
+	// Draw everything
+	var render = function () {
+		if (bgReady) {
+			ctx.drawImage(bgImage, 0, 0);
+		}
+		// if (heroReady) {
+		// 	ctx.drawImage(heroImage, hero.x, hero.y);
+		// }
+
+		if (monsterReady) {
+			ctx.drawImage(monsterImage, monster.x, monster.y);
+		}
+
+		for (var i=0; i<ship.parts.deck.length; i++){
+			// console.log(ship.parts.deck[i]);
+			ctx.drawImage(deckImage, (ship.parts.deck[i].x + directionHolder.x), (ship.parts.deck[i].y + directionHolder.y));
+		}
+
+		for (var i=0; i<ship.parts.cannon.length; i++){
+			// console.log(ship.parts.deck[i]);
+			ctx.drawImage(cannonImage, (ship.parts.cannon[i].x + directionHolder.x), (ship.parts.cannon[i].y + directionHolder.y));
+		}
+
+		// Score
+		ctx.fillStyle = "rgb(250, 250, 250)";
+		ctx.font = "24px Helvetica";
+		ctx.textAlign = "left";
+		ctx.textBaseline = "top";
+		ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
+	};
+
+	// The main game loop
+	var main = function () {
+		var now = Date.now();
+		var delta = now - then;
+		update(delta / 1000);
+		render();
+		then = now;
+		// Request to do this again ASAP
+		requestAnimationFrame(main);
+	};
+
+	// Cross-browser support for requestAnimationFrame
+	var w = window;
+	requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+	
+	// Let's play this game!
+	var then = Date.now();
+	reset();
+	main();
+
+</script>
