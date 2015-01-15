@@ -26,9 +26,6 @@
 		//multiple sections
 		//multiple monsters
 
-		//maybe this should be animated that the cannons come from below deck?
-		//give this the feeling that the captain is turning all sorts of cranks and pulleys?  make it goofy?
-
 	// Create the canvas
 	var canvas = document.createElement("canvas");
 	var ctx = canvas.getContext("2d");
@@ -116,7 +113,47 @@
 					range: 128,
 					accuracy: 80,
 					active: "no",
-					// fireID: requestAnimationFrame(fireCannon)
+					fireWeapon: function(){
+
+						console.log("firing");
+
+						console.log(this.fireRate);
+						var fps = 0.5;
+						var rightNow;
+						var andThen = Date.now();
+						var d;
+
+						var fireCannon = function(){
+							rightNow = Date.now();
+						    d = rightNow - andThen;
+						     
+						    if (d > interval) {
+						        // update time stuffs
+						         
+						        // Just `then = now` is not enough.
+						        // Lets say we set fps at 10 which means
+						        // each frame must take 100ms
+						        // Now frame executes in 16ms (60fps) so
+						        // the loop iterates 7 times (16*7 = 112ms) until
+						        // delta > interval === true
+						        // Eventually this lowers down the FPS as
+						        // 112*10 = 1120ms (NOT 1000ms).
+						        // So we have to get rid of that extra 12ms
+						        // by subtracting delta (112) % interval (100).
+						        // Hope that makes sense.
+						         
+						        andThen = rightNow - (d % this.fireRate);
+
+						        console.log("cannon is firing");
+						         
+						        // ... Code for Drawing the Frame ...
+						    }
+
+						    requestAnimationFrame(fireCannon);
+						}
+
+						// fireCannon();
+					}
 				},
 				{
 					x:128,
@@ -132,45 +169,22 @@
 	}
 
 
-	var fireRate = 700;
-	//1000 is once per second
-	var rightNow;
-	var andThen = Date.now();
-	var d;
-
-	var globalID;
-
-	var fireCannon = function(){
-		rightNow = Date.now();
-	    d = rightNow - andThen;
-	     
-	    if (d > fireRate) {
-
-	        andThen = rightNow - (d % fireRate);
-	        // console.log("cannon is firing");
-	        var hitChance = Math.floor(Math.random() *100);
-
-	        if (hitChance > 30){
-	        	console.log("it's a hit!");
-	        }
-	        else {
-	        	console.log("it's a miss!");
-	        }
-
-	        // console.log(hitChance);
-	        // console.log(Math.floor(Math.random() *10));
-	         
-	        // ... Code for Drawing the Frame ...
-	    }
-
-	    globalID = requestAnimationFrame(fireCannon);
-	}
-
-	// fireCannon();
-
 	//calling a function within an object
-	// ship.parts.cannon[0].fireWeapon();
+	ship.parts.cannon[0].fireWeapon();
+
+
+	console.log("hey there");
 	
+	
+
+	// console.log(ship.parts);
+
+	// for (var i=0; i<ship.parts.deck.length; i++){
+	// 	console.log(ship.parts.deck[i]);
+
+	// }
+	
+	// console.log(document.getElementById("measureMe").clientHeight);
 
 	// Background image
 	var bgReady = false;
@@ -231,11 +245,8 @@
 		// }
 
 		// Throw the monster somewhere on the screen randomly
-
-		monster.x = 400;
-		monster.y = 128;
-		// monster.x = 32 + (Math.random() * (canvas.width - 64));
-		// monster.y = 32 + (Math.random() * (canvas.height - 64));
+		monster.x = 32 + (Math.random() * (canvas.width - 64));
+		monster.y = 32 + (Math.random() * (canvas.height - 64));
 		
 	};
 
@@ -275,42 +286,28 @@
 		// 	console.log("cannon A Y hit!");
 		// }
 
-		// for (var i=0; i<ship.parts.cannon.length; i++){
-			if ((ship.parts.cannon[0].x + directionHolder.x >= monster.x - ship.parts.cannon[0].range) && (ship.parts.cannon[0].x + directionHolder.x <= monster.x + 32) && (ship.parts.cannon[0].y + directionHolder.y >= monster.y - 16) && (ship.parts.cannon[0].y + directionHolder.y <= monster.y + 16)){
+		for (var i=0; i<ship.parts.cannon.length; i++){
+			if ((ship.parts.cannon[i].x + directionHolder.x >= monster.x - ship.parts.cannon[i].range) && (ship.parts.cannon[i].x + directionHolder.x <= monster.x + 32) && (ship.parts.cannon[i].y + directionHolder.y >= monster.y - 16) && (ship.parts.cannon[i].y + directionHolder.y <= monster.y + 16)){
 
 				//this will hit the general area
 				// var now = Date.now();
 				// var delta = now - then;
 				// cannonFire();
 
-				// ship.parts.cannon[i].active = "yes";
-				// console.log("heya");
-				// fireCannon();
-
-				//stop this from firing 10000 times; should only fire the one time
-				globalID = requestAnimationFrame(fireCannon);
+				ship.parts.cannon[i].active = "yes";
 				// check if the cannon is firing
 				// if it is, then go for it
 				// console.log("cannon " + i + " in range!");
 			}
 			else {
-				ship.parts.cannon[0].active = "no";
-				window.cancelAnimationFrame(globalID);
+				ship.parts.cannon[i].active = "no";
 			}
 
-			if (ship.parts.cannon[0].active == "yes"){
-				// console.log(ship.parts.cannon[i].active);
+			if (ship.parts.cannon[i].active == "yes"){
+				console.log(ship.parts.cannon[i].active);
 			}
-		// }
-
-		//this works for the one cannon
-		if ((ship.parts.cannon[0].x + directionHolder.x >= monster.x - ship.parts.cannon[0].range) && (ship.parts.cannon[0].x + directionHolder.x <= monster.x + 32) && (ship.parts.cannon[0].y + directionHolder.y >= monster.y - 16) && (ship.parts.cannon[0].y + directionHolder.y <= monster.y + 16)){
-			globalID = requestAnimationFrame(fireCannon);
 		}
-		else {
-			console.log("cancel that");
-			window.cancelAnimationFrame(globalID);
-		}
+		
 
 
 		// if ((ship.parts.cannon[0].y >= monster.y -32) && (ship.parts.cannon[0].y <= monster.y) && (ship.parts.cannon[0].x >= monster.x - 150) && (ship.parts.cannon[0].x <= monster.x-32)){
@@ -381,6 +378,6 @@
 	// Let's play this game!
 	var then = Date.now();
 	reset();
-	main();
+	// main();
 
 </script>
