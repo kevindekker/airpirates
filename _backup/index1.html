@@ -22,14 +22,6 @@
 				//if ship is hit
 				//cannon also blows up that section of deck
 					//simpler
-		//hitting
-			//what has been hit
-			//how much damage it gets
-			//how much life it has left
-			//is it destroyed
-				//remove from the stage
-				//am I going to have to redraw the ENTIRE ship?
-				//shit...
 
 		//multiple sections
 		//multiple monsters
@@ -60,7 +52,6 @@
 	var d;
 
 	var globalID;
-	var target;
 
 
 	var ship = {
@@ -130,37 +121,26 @@
 					y:128,
 					direction: "E",
 					fireRate: 500,
-					//1000 is one second for fireRate
+					//fireRate = 1000/originalFirerate
 					range: 128,
-					damage: 500,
-					accuracy: 50,
+					accuracy: 80,
 					active: "no",
 					fireWeapon: function(){
-						// console.log(target);
 						rightNow = Date.now();
 					    d = rightNow - andThen;
-					    //this function needs to know what "this" refers to so I don't have to do any tricky business
-					    //this function also needs to know WHAT it hit
-					    //just hitting something isn't good enough...
 
-					    if (d > ship.parts.cannon[0].fireRate) {
-					        andThen = rightNow - (d % ship.parts.cannon[0].fireRate);
-					        var hitChance = Math.floor(Math.random() * ship.parts.cannon[0].accuracy);
-					        if (hitChance > 30){
-					        	console.log("cannon A hits");
-					        	target.health = target.health - ship.parts.cannon[0].damage;
-					        	console.log(target.health);
-					        }
-					        if (target.health <=0){
-					        	//remove the target from the stage
-					        	console.log("she's dead, jim");
-					        	++monstersCaught;
-								reset();
-					        }
-					        // else {
-					        // 	console.log("cannon A misses");
-					        // }
-					    }
+					    console.log("cannon A is firing");
+					     
+					    // if (d > fireRate) {
+					    //     andThen = rightNow - (d % fireRate);
+					    //     var hitChance = Math.floor(Math.random() *100);
+					    //     if (hitChance > 30){
+					    //     	console.log("it's a hit!");
+					    //     }
+					    //     else {
+					    //     	console.log("it's a miss!");
+					    //     }
+					    // }
 
 					    globalID = requestAnimationFrame(ship.parts.cannon[0].fireWeapon);
 					}
@@ -169,26 +149,26 @@
 					x:128,
 					y:192,
 					direction: "E",
-					fireRate: 2000,
+					fireRate: 2000000,
 					range: 224,
-					damage: 1000,
-					accuracy: 80,
+					accuracy: 20,
 					active: "no",
 					fireWeapon: function(){
 						rightNow = Date.now();
 					    d = rightNow - andThen;
 
-					    if (d > ship.parts.cannon[1].fireRate) {
-					        andThen = rightNow - (d % ship.parts.cannon[1].fireRate);
-					        var hitChance = Math.floor(Math.random() * ship.parts.cannon[1].accuracy);
-					        if (hitChance > 30){
-					        	target.health = target.health - ship.parts.cannon[1].damage;
-					        }
-					        if (target.health <=0){
-					        	++monstersCaught;
-								reset();
-					        }
-					    }
+					    console.log("cannon B is firing");
+					     
+					    // if (d > fireRate) {
+					    //     andThen = rightNow - (d % fireRate);
+					    //     var hitChance = Math.floor(Math.random() *100);
+					    //     if (hitChance > 30){
+					    //     	console.log("it's a hit!");
+					    //     }
+					    //     else {
+					    //     	console.log("it's a miss!");
+					    //     }
+					    // }
 
 					    globalID = requestAnimationFrame(ship.parts.cannon[1].fireWeapon);
 					}
@@ -197,8 +177,41 @@
 		}
 	}
 
+
+	var fireCannon = function(){
+		rightNow = Date.now();
+	    d = rightNow - andThen;
+	     
+	    if (d > fireRate) {
+
+	        andThen = rightNow - (d % fireRate);
+	        var hitChance = Math.floor(Math.random() *100);
+	        if (hitChance > 30){
+	        	console.log("it's a hit!");
+	        }
+	        else {
+	        	console.log("it's a miss!");
+	        }
+
+	        // console.log(hitChance);
+	        // console.log(Math.floor(Math.random() *10));
+	         
+	        // ... Code for Drawing the Frame ...
+	    }
+
+	    globalID = requestAnimationFrame(fireCannon);
+	}
+
+	// fireCannon();
+
 	//calling a function within an object
 	// ship.parts.cannon[0].fireWeapon();
+
+	//so...
+	//we need to check to see if the cannon is in range
+	//if the cannon is in range commencefiring
+	//if the cannon is firing, don't start more firing
+	//if the cannon moves out of range, stop the firing
 	
 
 	// Background image
@@ -234,9 +247,7 @@
 	monsterImage.src = "images/monster.png";
 
 	// Game objects
-	var monster = {
-		health: 1000
-	};
+	var monster = {};
 	var monstersCaught = 0;
 	// Handle keyboard controls
 	var keysDown = {};
@@ -251,11 +262,22 @@
 
 	// Reset the game when the player catches a monster
 	var reset = function () {
+		// hero.x = canvas.width / 2;
+		// hero.y = canvas.height / 2;
+
+		// console.log("hey there");
+		//don't really need to worry about this too much
+		// for (var i=0; i<ship.parts.deck.length; i++){
+		// 	console.log(ship.parts.deck[i]);
+		// 	// ctx.drawImage(heroImage, (ship.parts.deck[i].x), (ship.parts.deck[i].y));
+		// }
 
 		// Throw the monster somewhere on the screen randomly
-		monster.health = 1000;
-		monster.x = 32 + (Math.random() * (canvas.width - 64));
-		monster.y = 32 + (Math.random() * (canvas.height - 64));
+
+		monster.x = 400;
+		monster.y = 128;
+		// monster.x = 32 + (Math.random() * (canvas.width - 64));
+		// monster.y = 32 + (Math.random() * (canvas.height - 64));
 		
 	};
 
@@ -289,19 +311,31 @@
 			if ((ship.parts.cannon[i].x + directionHolder.x >= monster.x - ship.parts.cannon[i].range) && (ship.parts.cannon[i].x + directionHolder.x <= monster.x + 32) && (ship.parts.cannon[i].y + directionHolder.y >= monster.y - 16) && (ship.parts.cannon[i].y + directionHolder.y <= monster.y + 16)){
 				if (ship.parts.cannon[i].active == "no"){
 					ship.parts.cannon[i].active = "yes";
-					target = monster;
-					// console.log(target);
 					globalID = requestAnimationFrame(ship.parts.cannon[i].fireWeapon);
 				}
 			}
 			else {
 				if (ship.parts.cannon[i].active == "yes"){
-					// console.log("cancel that");
+					console.log("cancel that");
 					window.cancelAnimationFrame(globalID);
 					ship.parts.cannon[i].active = "no";
 				}
 			}
 		}
+
+
+		// if ((ship.parts.cannon[0].y >= monster.y -32) && (ship.parts.cannon[0].y <= monster.y) && (ship.parts.cannon[0].x >= monster.x - 150) && (ship.parts.cannon[0].x <= monster.x-32)){
+		// 	//this will hit the general area
+		// 	console.log("cannon A hit!");
+		// }
+
+		// Are they touching?
+		// for (var i=0; i<ship.parts.deck.length; i++){
+		// 	if ((ship.parts.deck[i].x + directionHolder.x) <= (monster.x + 32) && monster.x <= ((ship.parts.deck[i].x + directionHolder.x) + 32) && (ship.parts.deck[i].y + directionHolder.y) <= (monster.y + 32) && monster.y <= ((ship.parts.deck[i].x + directionHolder.x) + 32)) {
+		// 		++monstersCaught;
+		// 		reset();
+		// 	}
+		// }
 	};
 
 	// Draw everything
@@ -309,6 +343,9 @@
 		if (bgReady) {
 			ctx.drawImage(bgImage, 0, 0);
 		}
+		// if (heroReady) {
+		// 	ctx.drawImage(heroImage, hero.x, hero.y);
+		// }
 
 		if (monsterReady) {
 			ctx.drawImage(monsterImage, monster.x, monster.y);
@@ -316,12 +353,14 @@
 
 		if (deckImageReady) {
 			for (var i=0; i<ship.parts.deck.length; i++){
+				// console.log(ship.parts.deck[i]);
 				ctx.drawImage(deckImage, (ship.parts.deck[i].x + directionHolder.x), (ship.parts.deck[i].y + directionHolder.y));
 			}
 		}
 
 		if (cannonImageReady) {
 			for (var i=0; i<ship.parts.cannon.length; i++){
+				// console.log(ship.parts.deck[i]);
 				ctx.drawImage(cannonImage, (ship.parts.cannon[i].x + directionHolder.x), (ship.parts.cannon[i].y + directionHolder.y));
 			}
 		}
