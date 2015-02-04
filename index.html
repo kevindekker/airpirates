@@ -10,118 +10,220 @@
 
 <script language="javascript">
 
+	//game in a nutshell:
+		//build/upgrade a ship
+		//fight other ships to earn coins
+		//repeat
+
 	//to do
-		//larger ship
+
+		//picking a fight
+			//user can select against CPU or users (for now maybe based on leve?)
+			//outline of 3 ships are shown
+			//user selects which ship they would like to fight against
+			//smaller ships could be sneaky...
+			//show badges of potential enemies
+				//pay for full version to see the REAL enemy
+			//should select randomly if it is right side or left side
+
+		//speed and time
+			//rounds last minimum of 15 seconds
+			//max of 45 (unless harpooned)
+			//this would be better for the battery life and the animation
+			//maybe 3 attacks per hour?
+			//if ship B is faster than ship A, time is reduced
+
+		//badges
+			//ship value
+			//speed
+			//kills
+				//a full kill is when a ship is heavier than the balloons can hold up
+
+		//allies
+			//allies can't be challenged
+			//a percentage of earnings should also go to friends
+				//not deducted from yours
+
+		// x larger ship
 		//full screen game
-		//moving the ship
+		// x moving the ship
 			//wind?
 		//shooting
-			//random hit/miss
-			//against specific points on enemy ship
-			//check if ship is hit
+			// x random hit/miss
+			// x against specific points on enemy ship
+			// x check if ship is hit
 				//if ship is hit
 				//cannon also blows up that section of deck
 					//simpler
 		//hitting
-			//what has been hit
-			//how much damage it gets
-			//how much life it has left
-			//is it destroyed
+			// x what has been hit
+			// x how much damage it gets
+			// x how much life it has left
+			// x is it destroyed
 				//remove from the stage
 				//am I going to have to redraw the ENTIRE ship?
 				//shit...
+
+		//style
+			//maybe go down to smallers squares?
+			//clouds below and a few above
+				//should move appropriate to speed
+			//landscape below moving by slowly
+				//make this blurry & desaturated
+
+		//shipyard
+			//the ship
+				//captains chair/cockpit
+				//deck
+					//wood
+					//steel
+					//iron
+				//cannons
+					//fast firing
+					//double barrel
+					//bouncing bullets/grapeshot
+					//long range
+					//more than 1 space taken up?
+				//engines
+				//balloons
+				//"aerodynamic" pieces
+				//special
+					//harpoons
+					//spikes
+					//super cannon
+			//repair sections of the ship
+			//sell pieces
+			//sideboard
+			//value of ship
+			//speed
+			//weight
+			//drag and drop, snap to grid
+			//build by section
+				//other pieces become transparent?
 
 		//multiple sections
 		//multiple monsters
 
 		//maybe this should be animated that the cannons come from below deck?
 		//give this the feeling that the captain is turning all sorts of cranks and pulleys?  make it goofy?
+			//gears, cogs, etc
+
+		//extras
+			//name of ship
+			//team mates
+			//record of wins
+			//match up with values of ships
+			//flags
+			//reputation
 
 	// Create the canvas
 	var canvas = document.createElement("canvas");
 	var ctx = canvas.getContext("2d");
 
-
+	//full screen why not?
 	canvas.width = 512;
 	canvas.height = 480;
 
 	document.body.appendChild(canvas);
 
 	var directionHolder = {
-					x:0,
-					y:0
-				};
+		x:0,
+		y:0
+	};
 
+	var enemyDirectionHolder = {
+		//this will drift, but won't move much
+		x:0,
+		y:0
+	};
 
-	var fireRate = 700;
-	//1000 is once per second
-	var rightNow;
-	var andThen = Date.now();
-	var d;
+	var baseTime = Date.now();
 
-	var globalID;
-	var target;
-
+	var shipHit = [];
+	var enemyShipHit = [];
 
 	var ship = {
 		speed: 180,
 		parts: {
 			deck: [
 				{
+					id:1,
 					x:64,
-					y:128
+					y:128,
+					health:1000
 				},
 				{
+					id:2,
 					x:64,
-					y:160
+					y:160,
+					health:1000
 				},
 				{
+					id:3,
 					x:64,
-					y:192
+					y:192,
+					health:1000
 				},
 				{
+					id:4,
 					x:64,
-					y:224
+					y:224,
+					health:1000
 				},
 				{
+					id:5,
 					x:96,
-					y:96
+					y:96,
+					health:1000
+					//bow
 				},
 				{
+					id:6,
 					x:96,
-					y:128
+					y:128,
+					health:1000
 				},
 				{
+					id:7,
 					x:96,
-					y:160
+					y:160,
+					health:1000
 				},
 				{
+					id:8,
 					x:96,
-					y:192
+					y:192,
+					health:1000
 				},
 				{
+					id:9,
 					x:96,
-					y:224
+					y:224,
+					health:1000
 				},
 				{
+					id:10,
 					x:128,
-					y:128
+					y:128,
+					health:1000
 				},
 				{
+					id:11,
 					x:128,
-					y:160
+					y:160,
+					health:1000
 				},
 				{
+					id:12,
 					x:128,
-					y:192
+					y:192,
+					health:1000
 				},
 				{
+					id:13,
 					x:128,
-					y:224
-				},
-				{
-					x:128,
-					y:224
+					y:224,
+					health:1000
 				}
 			],
 			cannon: [
@@ -135,34 +237,20 @@
 					damage: 500,
 					accuracy: 50,
 					active: "no",
-					fireWeapon: function(){
-						// console.log(target);
-						rightNow = Date.now();
-					    d = rightNow - andThen;
-					    //this function needs to know what "this" refers to so I don't have to do any tricky business
-					    //this function also needs to know WHAT it hit
-					    //just hitting something isn't good enough...
+					timeInRange: 0,
+					fireWeapon: function(target){
+				        var hitChance = Math.floor(Math.random() * this.accuracy);
+				        if (hitChance > 30){
+				        	console.log("ship A hits " + target.id);
+				        	target.health = target.health - this.damage;
+				        }
+				        else {
+				        	console.log("Ooooh, ship A has missed");
+				        }
+				        if (target.health <=0){
+				        	console.log(target.id + "'s dead, jim");
+				        }
 
-					    if (d > ship.parts.cannon[0].fireRate) {
-					        andThen = rightNow - (d % ship.parts.cannon[0].fireRate);
-					        var hitChance = Math.floor(Math.random() * ship.parts.cannon[0].accuracy);
-					        if (hitChance > 30){
-					        	console.log("cannon A hits");
-					        	target.health = target.health - ship.parts.cannon[0].damage;
-					        	console.log(target.health);
-					        }
-					        if (target.health <=0){
-					        	//remove the target from the stage
-					        	console.log("she's dead, jim");
-					        	++monstersCaught;
-								reset();
-					        }
-					        // else {
-					        // 	console.log("cannon A misses");
-					        // }
-					    }
-
-					    globalID = requestAnimationFrame(ship.parts.cannon[0].fireWeapon);
 					}
 				},
 				{
@@ -174,32 +262,188 @@
 					damage: 1000,
 					accuracy: 80,
 					active: "no",
-					fireWeapon: function(){
-						rightNow = Date.now();
-					    d = rightNow - andThen;
+					timeInRange: 0,
+					fireWeapon: function(target){
+				        var hitChance = Math.floor(Math.random() * this.accuracy);
+				        if (hitChance > 30){
+				        	console.log("ship B hits " + target.id);
+				        	target.health = target.health - this.damage;
+				        }
+				        else {
+				        	console.log("Ooooh, ship B has missed");
+				        }
+				        if (target.health <=0){
+				        	console.log(target.id + "'s dead, jim");
+				        }
 
-					    if (d > ship.parts.cannon[1].fireRate) {
-					        andThen = rightNow - (d % ship.parts.cannon[1].fireRate);
-					        var hitChance = Math.floor(Math.random() * ship.parts.cannon[1].accuracy);
-					        if (hitChance > 30){
-					        	target.health = target.health - ship.parts.cannon[1].damage;
-					        }
-					        if (target.health <=0){
-					        	++monstersCaught;
-								reset();
-					        }
-					    }
-
-					    globalID = requestAnimationFrame(ship.parts.cannon[1].fireWeapon);
 					}
 				},
 			]
 		}
 	}
 
-	//calling a function within an object
-	// ship.parts.cannon[0].fireWeapon();
+	var enemyShip = {
+		speed: 180,
+		parts: {
+			deck: [
+				{
+					id:1,
+					x:364,
+					y:128,
+					health:1000
+				},
+				{
+					id:2,
+					x:364,
+					y:160,
+					health:1000
+				},
+				{
+					id:3,
+					x:364,
+					y:192,
+					health:1000
+				},
+				{
+					id:4,
+					x:364,
+					y:224,
+					health:1000
+				},
+				{
+					id:5,
+					x:396,
+					y:96,
+					health:1000
+				},
+				{
+					id:6,
+					x:396,
+					y:128,
+					health:1000
+				},
+				{
+					id:7,
+					x:396,
+					y:160,
+					health:1000
+				},
+				{
+					id:8,
+					x:396,
+					y:192,
+					health:1000
+				},
+				{
+					id:9,
+					x:396,
+					y:224,
+					health:1000
+				},
+				{
+					id:10,
+					x:428,
+					y:128,
+					health:1000
+				},
+				{
+					id:11,
+					x:428,
+					y:160,
+					health:1000
+				},
+				{
+					id:12,
+					x:428,
+					y:192,
+					health:1000
+				},
+				{
+					id:13,
+					x:428,
+					y:224,
+					health:1000
+				}
+			],
+			cannon: [
+				{
+					x:364,
+					y:128,
+					direction: "W",
+					fireRate: 500,
+					range: 128,
+					damage: 500,
+					accuracy: 50,
+					active: "no",
+					timeInRange: 0,
+					fireWeapon: function(target){
+				        var hitChance = Math.floor(Math.random() * this.accuracy);
+				        if (hitChance > 30){
+				        	console.log("cannon A hits " + target.id);
+				        	target.health = target.health - this.damage;
+				        }
+					}
+				},
+				{
+					x:364,
+					y:192,
+					direction: "W",
+					fireRate: 2000,
+					range: 224,
+					damage: 500,
+					accuracy: 80,
+					active: "no",
+					timeInRange: 0,
+					fireWeapon: function(target){
+				        var hitChance = Math.floor(Math.random() * this.accuracy);
+				        if (hitChance > 30){
+				        	console.log("cannon B hits " + target.id);
+				        	target.health = target.health - this.damage;
+				        }
+					}
+				},
+			]
+		}
+	}
+
+	function findTargets(passedJSON, side){
+		//call this function when a piece of the deck gets blown up
+		//we're not currently checking for health...
+		var buildObject = [];
+		var valueNeeded = true;
+		for(var i = 0; i< passedJSON.parts.deck.length; i++){
+
+			for (var j = 0; j < buildObject.length; j++){
+				valueNeeded = false;
+
+				if (passedJSON.parts.deck[i].y == buildObject[j].y){
+					if (side == "left"){
+						if (passedJSON.parts.deck[i].x < buildObject[j].x && passedJSON.parts.deck[i].health > 0){
+							buildObject[j] = passedJSON.parts.deck[i];
+						}
+					}
+					else {
+						if (passedJSON.parts.deck[i].x > buildObject[j].x && passedJSON.parts.deck[i].health > 0){
+							buildObject[j] = passedJSON.parts.deck[i];
+						}
+					}
+
+					break;
+				}
+				else {
+					valueNeeded = true;
+				}
+			}
+			if (valueNeeded == true && passedJSON.parts.deck[i].health > 0){
+				buildObject.push(passedJSON.parts.deck[i]);
+			}
+		}
+		return buildObject;
+	}
 	
+	//find the hittable sections of the ships
+	shipHit = findTargets(ship, "right");
+	enemyShipHit = findTargets(enemyShip, "left");
 
 	// Background image
 	var bgReady = false;
@@ -225,19 +469,6 @@
 	};
 	cannonImage.src = "images/cannon.png";
 
-	// Monster image
-	var monsterReady = false;
-	var monsterImage = new Image();
-	monsterImage.onload = function () {
-		monsterReady = true;
-	};
-	monsterImage.src = "images/monster.png";
-
-	// Game objects
-	var monster = {
-		health: 1000
-	};
-	var monstersCaught = 0;
 	// Handle keyboard controls
 	var keysDown = {};
 
@@ -249,23 +480,11 @@
 		delete keysDown[e.keyCode];
 	}, false);
 
-	// Reset the game when the player catches a monster
-	var reset = function () {
-
-		// Throw the monster somewhere on the screen randomly
-		monster.health = 1000;
-		monster.x = 32 + (Math.random() * (canvas.width - 64));
-		monster.y = 32 + (Math.random() * (canvas.height - 64));
-		
-	};
-
-
 	// Update game objects
 	var update = function (modifier) {
 
 		// wind or drift
 		// hero.y -= hero.speed * (modifier/wind);
-
 
 		if (38 in keysDown) { // Player holding up
 			// hero.y -= hero.speed * modifier;
@@ -283,55 +502,138 @@
 			// hero.x += hero.speed * modifier;
 			directionHolder.x += Math.floor(ship.speed * modifier);
 		}
+		
+		//the main event
+		//they are separate for now; maybe in the future we'll need to make it dynamic
+		
+		var targetFound = false;
 
-		//this works for the one cannon
+		//myship
 		for (var i=0; i<ship.parts.cannon.length; i++){
-			if ((ship.parts.cannon[i].x + directionHolder.x >= monster.x - ship.parts.cannon[i].range) && (ship.parts.cannon[i].x + directionHolder.x <= monster.x + 32) && (ship.parts.cannon[i].y + directionHolder.y >= monster.y - 16) && (ship.parts.cannon[i].y + directionHolder.y <= monster.y + 16)){
-				if (ship.parts.cannon[i].active == "no"){
-					ship.parts.cannon[i].active = "yes";
-					target = monster;
-					// console.log(target);
-					globalID = requestAnimationFrame(ship.parts.cannon[i].fireWeapon);
+			for (var j=0; j<enemyShipHit.length; j++){
+				if (
+					(ship.parts.cannon[i].x + directionHolder.x >= enemyShipHit[j].x - ship.parts.cannon[i].range) 
+					&& (ship.parts.cannon[i].x + directionHolder.x <= enemyShipHit[j].x + 32) 
+					&& (ship.parts.cannon[i].y + directionHolder.y >= enemyShipHit[j].y - 16) 
+					&& (ship.parts.cannon[i].y + directionHolder.y <= enemyShipHit[j].y + 16)
+				){
+					targetFound = true;
+
+					if (ship.parts.cannon[i].active == "no"){
+						ship.parts.cannon[i].active = "yes";
+						ship.parts.cannon[i].timeInRange = Date.now();
+					}
+
+					if (ship.parts.cannon[i].active == "yes"){
+						var rightNow = Date.now();
+						var d = rightNow - ship.parts.cannon[i].timeInRange;
+						if (d > ship.parts.cannon[i].fireRate) {
+							ship.parts.cannon[i].timeInRange = rightNow - (d % ship.parts.cannon[i].fireRate);
+							ship.parts.cannon[i].fireWeapon(enemyShipHit[j]);
+						}
+						//do I need this break?
+						if(enemyShipHit[j].health <= 0){
+							console.log(j + " is dead, jim");
+							enemyShipHit = findTargets(enemyShip, "left");
+							// console.log(enemyShipHit);
+							render();
+
+							//need to redraw the ship after this
+						}
+						break;
+					}
 				}
 			}
-			else {
-				if (ship.parts.cannon[i].active == "yes"){
-					// console.log("cancel that");
-					window.cancelAnimationFrame(globalID);
-					ship.parts.cannon[i].active = "no";
+			if (targetFound == false && ship.parts.cannon[i].active == "yes"){
+				//reset all of this
+				ship.parts.cannon[i].active = "no"
+				ship.parts.cannon[i].timeInRange = 0;
+			}
+		}
+
+
+		//enemyShip
+		for (var i=0; i<enemyShip.parts.cannon.length; i++){
+			for (var j=0; j<shipHit.length; j++){
+				if (
+					(enemyShip.parts.cannon[i].x >= (shipHit[j].x + directionHolder.x - 32)) 
+					&& (enemyShip.parts.cannon[i].x <= (shipHit[j].x + directionHolder.x + enemyShip.parts.cannon[i].range)) 
+					&&(enemyShip.parts.cannon[i].y + enemyDirectionHolder.y >= shipHit[j].y + directionHolder.y - 16) 
+					&& (enemyShip.parts.cannon[i].y + enemyDirectionHolder.y <= shipHit[j].y + directionHolder.y + 16)
+				){
+					targetFound = true;
+
+					if (enemyShip.parts.cannon[i].active == "no"){
+						enemyShip.parts.cannon[i].active = "yes";
+						enemyShip.parts.cannon[i].timeInRange = Date.now();
+						// fire as soon as it comes in range?
+						// this will trigger EVERY time the cannon comes into range...  So the user can go back and forth
+						// enemyShip.parts.cannon[i].fireWeapon(shipHit[j]);
+					}
+
+					if (enemyShip.parts.cannon[i].active == "yes"){
+						var rightNow = Date.now();
+						var d = rightNow - enemyShip.parts.cannon[i].timeInRange;
+						if (d > enemyShip.parts.cannon[i].fireRate) {
+							enemyShip.parts.cannon[i].timeInRange = rightNow - (d % enemyShip.parts.cannon[i].fireRate);
+							enemyShip.parts.cannon[i].fireWeapon(shipHit[j]);
+						}
+						if(shipHit[j].health <= 0){
+							console.log(j + " is dead, jim");
+							shipHit = findTargets(ship, "right");
+							render();
+						}
+						//do I need this break?
+						break;
+					}
 				}
+			}
+			if (targetFound == false && enemyShip.parts.cannon[i].active == "yes"){
+				//reset all of this
+				enemyShip.parts.cannon[i].active = "no"
+				enemyShip.parts.cannon[i].timeInRange = 0;
 			}
 		}
 	};
 
 	// Draw everything
 	var render = function () {
+		//these go in order.  most recent goes on top
 		if (bgReady) {
 			ctx.drawImage(bgImage, 0, 0);
 		}
 
-		if (monsterReady) {
-			ctx.drawImage(monsterImage, monster.x, monster.y);
-		}
+		// if (monsterReady) {
+		// 	ctx.drawImage(monsterImage, monster.x, monster.y);
+		// }
+
+		//should probably break this up a little bit
+		//maybe join it with the shipHit and enemyShipHit?
 
 		if (deckImageReady) {
 			for (var i=0; i<ship.parts.deck.length; i++){
-				ctx.drawImage(deckImage, (ship.parts.deck[i].x + directionHolder.x), (ship.parts.deck[i].y + directionHolder.y));
+				if (ship.parts.deck[i].health > 0){
+					ctx.drawImage(deckImage, (ship.parts.deck[i].x + directionHolder.x), (ship.parts.deck[i].y + directionHolder.y));
+				}
+			}
+
+			for (var i=0; i<enemyShip.parts.deck.length; i++){
+				if (enemyShip.parts.deck[i].health > 0){
+					ctx.drawImage(deckImage, (enemyShip.parts.deck[i].x), (enemyShip.parts.deck[i].y));
+				}
 			}
 		}
 
+		//need to make sure that there is a space under it, otherwise drop it off!
 		if (cannonImageReady) {
 			for (var i=0; i<ship.parts.cannon.length; i++){
 				ctx.drawImage(cannonImage, (ship.parts.cannon[i].x + directionHolder.x), (ship.parts.cannon[i].y + directionHolder.y));
 			}
-		}
 
-		// Score
-		ctx.fillStyle = "rgb(250, 250, 250)";
-		ctx.font = "24px Helvetica";
-		ctx.textAlign = "left";
-		ctx.textBaseline = "top";
-		ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
+			for (var i=0; i<enemyShip.parts.cannon.length; i++){
+				ctx.drawImage(cannonImage, (enemyShip.parts.cannon[i].x), (enemyShip.parts.cannon[i].y));
+			}
+		}
 	};
 
 	// The main game loop
@@ -352,7 +654,7 @@
 	
 	// Let's play this game!
 	var then = Date.now();
-	reset();
+	// reset();
 	main();
 
 </script>
