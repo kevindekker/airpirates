@@ -25,6 +25,8 @@
 			//show badges of potential enemies
 				//pay for full version to see the REAL enemy
 			//should select randomly if it is right side or left side
+			//starting positions
+			//random backgrounds
 
 		//speed and time
 			//rounds last minimum of 15 seconds
@@ -32,6 +34,11 @@
 			//this would be better for the battery life and the animation
 			//maybe 3 attacks per hour?
 			//if ship B is faster than ship A, time is reduced
+			//big timer right at the start of the fight
+			//background should move in time with the speed of the ships
+				//definitely deactivate this stuff to save battery on the train
+				//a few different backgrounds to keep things looking fresh?
+				//needs to start background at bottom and slowly scroll up
 
 		//badges
 			//ship value
@@ -63,6 +70,19 @@
 				//remove from the stage
 				//am I going to have to redraw the ENTIRE ship?
 				//shit...
+			// there should be some kind of framework under the deck so the ship doesn't just disappear
+			//stuff needs to look a bit damaged
+				//see through the boards!
+				//is this going to re-render the whole ship?
+			//what happens if a ship gets split in half?
+				//woah...
+				//if piece is not attached to 'captain' section, blow it all up?
+				//background structure would hold it together
+
+		//moving
+			//shouldn't be able to move past the other ship
+			//can't run out of "war zone"
+			//war zone needs to be determined
 
 		//style
 			//maybe go down to smallers squares?
@@ -121,10 +141,16 @@
 	var ctx = canvas.getContext("2d");
 
 	//full screen why not?
-	canvas.width = 512;
-	canvas.height = 480;
+	canvas.width = 650;
+	canvas.height = 650;
 
 	document.body.appendChild(canvas);
+
+	var battleInformation = {
+		x:0,
+		y:0,
+		speed:100
+	}
 
 	var directionHolder = {
 		x:0,
@@ -241,11 +267,31 @@
 					fireWeapon: function(target){
 				        var hitChance = Math.floor(Math.random() * this.accuracy);
 				        if (hitChance > 30){
-				        	console.log("ship A hits " + target.id);
+				        	console.log("cannon A hits " + target.id);
 				        	target.health = target.health - this.damage;
 				        }
-				        else {
-				        	console.log("Ooooh, ship A has missed");
+				        if (target.health <=0){
+				        	console.log(target.id + "'s dead, jim");
+				        }
+
+					}
+				},
+				{
+					x:128,
+					y:160,
+					direction: "E",
+					fireRate: 750,
+					//1000 is one second for fireRate
+					range: 128,
+					damage: 1000,
+					accuracy: 50,
+					active: "no",
+					timeInRange: 0,
+					fireWeapon: function(target){
+				        var hitChance = Math.floor(Math.random() * this.accuracy);
+				        if (hitChance > 30){
+				        	console.log("cannon B hits " + target.id);
+				        	target.health = target.health - this.damage;
 				        }
 				        if (target.health <=0){
 				        	console.log(target.id + "'s dead, jim");
@@ -266,11 +312,8 @@
 					fireWeapon: function(target){
 				        var hitChance = Math.floor(Math.random() * this.accuracy);
 				        if (hitChance > 30){
-				        	console.log("ship B hits " + target.id);
+				        	console.log("cannon C hits " + target.id);
 				        	target.health = target.health - this.damage;
-				        }
-				        else {
-				        	console.log("Ooooh, ship B has missed");
 				        }
 				        if (target.health <=0){
 				        	console.log(target.id + "'s dead, jim");
@@ -379,7 +422,7 @@
 					fireWeapon: function(target){
 				        var hitChance = Math.floor(Math.random() * this.accuracy);
 				        if (hitChance > 30){
-				        	console.log("cannon A hits " + target.id);
+				        	// console.log("cannon A hits " + target.id);
 				        	target.health = target.health - this.damage;
 				        }
 					}
@@ -397,7 +440,7 @@
 					fireWeapon: function(target){
 				        var hitChance = Math.floor(Math.random() * this.accuracy);
 				        if (hitChance > 30){
-				        	console.log("cannon B hits " + target.id);
+				        	// console.log("cannon B hits " + target.id);
 				        	target.health = target.health - this.damage;
 				        }
 					}
@@ -453,6 +496,22 @@
 	};
 	bgImage.src = "images/background.png";
 
+	// clouds image
+	var cloudReady = false;
+	var cloudImage = new Image();
+	cloudImage.onload = function () {
+		cloudReady = true;
+	};
+	cloudImage.src = "images/cloud.png";
+
+	// rigging image
+	var riggingImageReady = false;
+	var riggingImage = new Image();
+	riggingImage.onload = function () {
+		riggingImageReady = true;
+	};
+	riggingImage.src = "images/rigging.png";
+
 	// Deck image
 	var deckImageReady = false;
 	var deckImage = new Image();
@@ -483,8 +542,13 @@
 	// Update game objects
 	var update = function (modifier) {
 
+		// 0.5 is not cool
+		// this will move the background
+		// battleInformation.y = battleInformation.y + 1;
+
 		// wind or drift
-		// hero.y -= hero.speed * (modifier/wind);
+		// this drift needs to happen or it doesn't feel like a real thing
+		// ship.y -= ship.speed * (modifier/wind);
 
 		if (38 in keysDown) { // Player holding up
 			// hero.y -= hero.speed * modifier;
@@ -600,15 +664,28 @@
 	var render = function () {
 		//these go in order.  most recent goes on top
 		if (bgReady) {
-			ctx.drawImage(bgImage, 0, 0);
+			//starts low so it can scroll up
+			ctx.drawImage(bgImage, 0, -600 + battleInformation.y);
 		}
 
-		// if (monsterReady) {
-		// 	ctx.drawImage(monsterImage, monster.x, monster.y);
-		// }
+		//i need a good, clever way to make a bunch of clouds...
+		if (cloudReady) {
+			ctx.drawImage(cloudImage, 0, 0);
+		}
 
 		//should probably break this up a little bit
 		//maybe join it with the shipHit and enemyShipHit?
+
+
+		if (riggingImageReady) {
+			for (var i=0; i<ship.parts.deck.length; i++){
+				ctx.drawImage(riggingImage, (ship.parts.deck[i].x + directionHolder.x), (ship.parts.deck[i].y + directionHolder.y));
+			}
+
+			for (var i=0; i<enemyShip.parts.deck.length; i++){
+				ctx.drawImage(riggingImage, (enemyShip.parts.deck[i].x), (enemyShip.parts.deck[i].y));
+			}
+		}
 
 		if (deckImageReady) {
 			for (var i=0; i<ship.parts.deck.length; i++){
