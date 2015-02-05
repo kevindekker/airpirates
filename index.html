@@ -15,6 +15,10 @@
 		//fight other ships to earn coins
 		//repeat
 
+	// today 
+		// let's get the clouds going
+		// when they reach the bottom, put them at the top again
+
 	//to do
 
 		//picking a fight
@@ -70,14 +74,19 @@
 				//remove from the stage
 				//am I going to have to redraw the ENTIRE ship?
 				//shit...
-			// there should be some kind of framework under the deck so the ship doesn't just disappear
-			//stuff needs to look a bit damaged
+			// x there should be some kind of framework under the deck so the ship doesn't just disappear
+			// stuff needs to look a bit damaged
 				//see through the boards!
 				//is this going to re-render the whole ship?
 			//what happens if a ship gets split in half?
-				//woah...
 				//if piece is not attached to 'captain' section, blow it all up?
-				//background structure would hold it together
+				// x background structure would hold it together
+
+		//animations
+			//cannons firing
+			//things being hit
+			//things blowing up
+			//cannons popping out, apparently
 
 		//moving
 			//shouldn't be able to move past the other ship
@@ -121,10 +130,10 @@
 			//build by section
 				//other pieces become transparent?
 
-		//multiple sections
-		//multiple monsters
-
-		//maybe this should be animated that the cannons come from below deck?
+		// maybe this should be animated that the cannons come from below deck?
+			// this would be an extra level of surprise
+			// SPECIFIC guns should only come out when close enough
+				// oh that's sweet
 		//give this the feeling that the captain is turning all sorts of cranks and pulleys?  make it goofy?
 			//gears, cogs, etc
 
@@ -162,6 +171,45 @@
 		x:0,
 		y:0
 	};
+
+	var clouds = [
+		{
+			id:1,
+			x:100,
+			y:-200,
+			speed:1,
+			health:1000
+		},
+		{
+			id:2,
+			x:200,
+			y:-60,
+			speed:2,
+			health:1000
+		},
+		{
+			id:3,
+			x:32,
+			y:-300,
+			speed:2,
+			health:1000
+		},
+		{
+			id:4,
+			x:228,
+			y:-60,
+			speed:5,
+			health:1000
+		},
+		{
+			id:5,
+			x:100,
+			y:-100,
+			speed:5,
+			health:1000
+			//bow
+		}
+	]
 
 	var baseTime = Date.now();
 
@@ -544,7 +592,7 @@
 
 		// 0.5 is not cool
 		// this will move the background
-		// battleInformation.y = battleInformation.y + 1;
+		battleInformation.y = battleInformation.y + 0.5;
 
 		// wind or drift
 		// this drift needs to happen or it doesn't feel like a real thing
@@ -665,12 +713,22 @@
 		//these go in order.  most recent goes on top
 		if (bgReady) {
 			//starts low so it can scroll up
+			// ctx.drawImage(bgImage, 0, -600 + battleInformation.y);
 			ctx.drawImage(bgImage, 0, -600 + battleInformation.y);
 		}
 
-		//i need a good, clever way to make a bunch of clouds...
 		if (cloudReady) {
-			ctx.drawImage(cloudImage, 0, 0);
+			//closer clouds are faster and larger
+			for (var i =0; i<clouds.length; i++){
+				clouds[i].y = clouds[i].y + clouds[i].speed;
+
+				if (clouds[i].y >= 700){
+					clouds[i].y = 0;
+					clouds[i].x = Math.floor(Math.random() * 650);
+				}
+
+				ctx.drawImage(cloudImage, clouds[i].x, clouds[i].y);
+			}
 		}
 
 		//should probably break this up a little bit
