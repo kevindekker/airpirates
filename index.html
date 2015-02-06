@@ -15,9 +15,10 @@
 		//fight other ships to earn coins
 		//repeat
 
-	// today 
-		// let's get the clouds going
-		// when they reach the bottom, put them at the top again
+	//next
+		//build BIGGER ships
+		//slow this thing down...
+		//add the balloons, take them out?
 
 	//to do
 
@@ -55,6 +56,11 @@
 			//a percentage of earnings should also go to friends
 				//not deducted from yours
 
+		//coins
+			//earned for damage
+			//bonus for destruction
+				//only happens when pieces actually blow up
+
 		// x larger ship
 		//full screen game
 		// x moving the ship
@@ -81,6 +87,18 @@
 			//what happens if a ship gets split in half?
 				//if piece is not attached to 'captain' section, blow it all up?
 				// x background structure would hold it together
+			// destroy pieces
+				//pop coins now
+
+		//ramming
+			//second iteration maybe
+			//types
+				//damage rams
+				//bouncing rams
+					//could be used kind of defensively
+				//hooking rams
+				//planks?
+				//saws
 
 		//animations
 			//cannons firing
@@ -155,6 +173,8 @@
 
 	document.body.appendChild(canvas);
 
+	var andThen = Date.now();
+
 	var battleInformation = {
 		x:0,
 		y:0,
@@ -163,13 +183,17 @@
 
 	var directionHolder = {
 		x:0,
-		y:0
+		y:0,
+		driftX:0,
+		driftY:0
 	};
 
 	var enemyDirectionHolder = {
 		//this will drift, but won't move much
 		x:0,
-		y:0
+		y:0,
+		driftX:0,
+		driftY:0,
 	};
 
 	var clouds = [
@@ -217,7 +241,13 @@
 	var enemyShipHit = [];
 
 	var ship = {
+		//these top values are all calculated PRE fight in the shipyard
 		speed: 180,
+		//top, bottom, left, right
+		bow: 96,
+		stern: 256,
+		port: 64,
+		starboard: 160,
 		parts: {
 			deck: [
 				{
@@ -315,11 +345,11 @@
 					fireWeapon: function(target){
 				        var hitChance = Math.floor(Math.random() * this.accuracy);
 				        if (hitChance > 30){
-				        	console.log("cannon A hits " + target.id);
+				        	// console.log("cannon A hits " + target.id);
 				        	target.health = target.health - this.damage;
 				        }
 				        if (target.health <=0){
-				        	console.log(target.id + "'s dead, jim");
+				        	// console.log(target.id + "'s dead, jim");
 				        }
 
 					}
@@ -338,11 +368,11 @@
 					fireWeapon: function(target){
 				        var hitChance = Math.floor(Math.random() * this.accuracy);
 				        if (hitChance > 30){
-				        	console.log("cannon B hits " + target.id);
+				        	// console.log("cannon B hits " + target.id);
 				        	target.health = target.health - this.damage;
 				        }
 				        if (target.health <=0){
-				        	console.log(target.id + "'s dead, jim");
+				        	// console.log(target.id + "'s dead, jim");
 				        }
 
 					}
@@ -360,11 +390,11 @@
 					fireWeapon: function(target){
 				        var hitChance = Math.floor(Math.random() * this.accuracy);
 				        if (hitChance > 30){
-				        	console.log("cannon C hits " + target.id);
+				        	// console.log("cannon C hits " + target.id);
 				        	target.health = target.health - this.damage;
 				        }
 				        if (target.health <=0){
-				        	console.log(target.id + "'s dead, jim");
+				        	// console.log(target.id + "'s dead, jim");
 				        }
 
 					}
@@ -375,6 +405,11 @@
 
 	var enemyShip = {
 		speed: 180,
+		//top, bottom, left, right
+		bow: 96,
+		stern: 160,
+		port: 364,
+		starboard: 460,
 		parts: {
 			deck: [
 				{
@@ -590,34 +625,136 @@
 	// Update game objects
 	var update = function (modifier) {
 
+
+		//we might need SOME kind of AI here...
+
 		// 0.5 is not cool
 		// this will move the background
 		battleInformation.y = battleInformation.y + 0.5;
 
 		// wind or drift
 		// this drift needs to happen or it doesn't feel like a real thing
+		// definitely make it slow in the wind...  shouldn't be able to speed ahead as quickly as it can move back
+		// it'd be sweet if there was a BIT of easing in the start of movement and rocking in the finish
+
 		// ship.y -= ship.speed * (modifier/wind);
 
-		if (38 in keysDown) { // Player holding up
-			// hero.y -= hero.speed * modifier;
-			directionHolder.y -= Math.floor(ship.speed * modifier);
+		//block both the left and the right
+		//block both the up and the down
+			//start with this
+		//don't let them go into each other
+		//prevent drift into each other
+			//it'd be awesome if they could crash and bounce!
+			//spikes or rammers!
+
+		//need to find:
+			//tip
+			//left
+			//right
+			//bottom
+
+		// for (var i=0; i<ship.parts.deck.length; i++){
+		
+		//drifty should be max of fifty
+
+		//current version is ONLY doing the one side.	
+			//two sided in next iteration
+
+		//calculate drift INTO direction for less math
+			//figure out the drift max
+			//maybe we can have wind in the battle?
+
+
+		// console.log(ship.port + directionHolder.x);
+		
+		// ship.y -= ship.speed * (1000);
+
+		//let's make the enemy directionholder happen first
+
+
+		//let's think about this now...
+			//let's do one at a time
+			//if driftX is LESS than directionholder x, subtract
+			//if driftX is MORE than, add
+			//if they are equal, then finish it off
+
+		//this is going to be a bit choppy, but whatever
+
+		//slow this WAAAY down
+		//do this MUCH slower...
+		//this should happen ONLY if the ship isn't being rammed
+		//
+
+		var driftRightNow = Date.now();
+		var driftD = driftRightNow - andThen;
+		if (driftD > 75) {
+			andThen = driftRightNow - (driftD % 75);
+			if (enemyDirectionHolder.x > enemyDirectionHolder.driftX){
+				enemyDirectionHolder.x -= 1;
+			}
+			else if (enemyDirectionHolder.x < enemyDirectionHolder.driftX){
+				enemyDirectionHolder.x += 1;
+			}
+			else {
+				enemyDirectionHolder.driftX = Math.floor(Math.random() * 50) - 25;
+			}
+
+			if (enemyDirectionHolder.y > enemyDirectionHolder.driftY){
+				enemyDirectionHolder.y -= 1;
+			}
+			else if (enemyDirectionHolder.y < enemyDirectionHolder.driftY){
+				enemyDirectionHolder.y += 1;
+			}
+			else {
+				enemyDirectionHolder.driftY = Math.floor(Math.random() * 50) - 25;
+			}
 		}
-		if (40 in keysDown) { // Player holding down
-			// hero.y += hero.speed * modifier;
-			directionHolder.y += Math.floor(ship.speed * modifier);
+			
+
+		// console.log(enemyDirectionHolder.x);
+
+		// up
+		if ((ship.bow + directionHolder.y - 50) >= 0){
+			if (38 in keysDown) {
+				directionHolder.y -= Math.floor(ship.speed * modifier);
+			}
 		}
-		if (37 in keysDown) { // Player holding left
-			// hero.x -= hero.speed * modifier;
-			directionHolder.x -= Math.floor(ship.speed * modifier);
+
+		//down
+		if ((ship.stern + directionHolder.y + 50) <= 650){
+			if (40 in keysDown) {
+				directionHolder.y += Math.floor(ship.speed * modifier);
+			}
 		}
-		if (39 in keysDown) { // Player holding right
-			// hero.x += hero.speed * modifier;
-			directionHolder.x += Math.floor(ship.speed * modifier);
+
+		//left
+		if ((ship.port + directionHolder.x - 50) >= 0){
+			if (37 in keysDown) {
+				directionHolder.x -= Math.floor(ship.speed * modifier);
+			}
 		}
+
+		//right
+		if ((ship.starboard + directionHolder.x) <= enemyShip.port + enemyDirectionHolder.x){
+			if (39 in keysDown) {
+				directionHolder.x += Math.floor(ship.speed * modifier);
+			}
+		}
+		else {
+			console.log("RAAAAAAM!");
+		}
+
+		// enemyDirectionHolder.x;
+
+
+		// }
 		
 		//the main event
 		//they are separate for now; maybe in the future we'll need to make it dynamic
 		
+		//is this really the best way to do it; with the 'directionHolder' crap?
+			//that will help with drift... but will it help with movement AND drift AND range?
+
 		var targetFound = false;
 
 		//myship
@@ -645,7 +782,7 @@
 						}
 						//do I need this break?
 						if(enemyShipHit[j].health <= 0){
-							console.log(j + " is dead, jim");
+							// console.log(j + " is dead, jim");
 							enemyShipHit = findTargets(enemyShip, "left");
 							// console.log(enemyShipHit);
 							render();
@@ -691,7 +828,7 @@
 							enemyShip.parts.cannon[i].fireWeapon(shipHit[j]);
 						}
 						if(shipHit[j].health <= 0){
-							console.log(j + " is dead, jim");
+							// console.log(j + " is dead, jim");
 							shipHit = findTargets(ship, "right");
 							render();
 						}
@@ -734,14 +871,13 @@
 		//should probably break this up a little bit
 		//maybe join it with the shipHit and enemyShipHit?
 
-
 		if (riggingImageReady) {
 			for (var i=0; i<ship.parts.deck.length; i++){
 				ctx.drawImage(riggingImage, (ship.parts.deck[i].x + directionHolder.x), (ship.parts.deck[i].y + directionHolder.y));
 			}
 
 			for (var i=0; i<enemyShip.parts.deck.length; i++){
-				ctx.drawImage(riggingImage, (enemyShip.parts.deck[i].x), (enemyShip.parts.deck[i].y));
+				ctx.drawImage(riggingImage, (enemyShip.parts.deck[i].x + enemyDirectionHolder.x), (enemyShip.parts.deck[i].y + enemyDirectionHolder.y));
 			}
 		}
 
@@ -754,7 +890,7 @@
 
 			for (var i=0; i<enemyShip.parts.deck.length; i++){
 				if (enemyShip.parts.deck[i].health > 0){
-					ctx.drawImage(deckImage, (enemyShip.parts.deck[i].x), (enemyShip.parts.deck[i].y));
+					ctx.drawImage(deckImage, (enemyShip.parts.deck[i].x + enemyDirectionHolder.x), (enemyShip.parts.deck[i].y + enemyDirectionHolder.y));
 				}
 			}
 		}
@@ -766,7 +902,7 @@
 			}
 
 			for (var i=0; i<enemyShip.parts.cannon.length; i++){
-				ctx.drawImage(cannonImage, (enemyShip.parts.cannon[i].x), (enemyShip.parts.cannon[i].y));
+				ctx.drawImage(cannonImage, (enemyShip.parts.cannon[i].x + enemyDirectionHolder.x), (enemyShip.parts.cannon[i].y + enemyDirectionHolder.y));
 			}
 		}
 	};
