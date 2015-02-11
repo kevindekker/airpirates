@@ -88,15 +88,15 @@
 		y:0
 	};
 
-	var fireRate = 700;
+	// var fireRate = 700;
 	//1000 is once per second
-	var rightNow;
-	var andThen = Date.now();
-	var d;
+	// var rightNow;
+	// var andThen = Date.now();
+	// var d;
 
-	var globalID;
-	var target;
-	var whichWeapon;
+	// var globalID;
+	// var target;
+	// var whichWeapon;
 
 	var shipHit = [];
 	var enemyShipHit = [];
@@ -198,34 +198,34 @@
 					active: "no",
 					fireWeapon: function(){
 						// console.log(target);
-						rightNow = Date.now();
-					    d = rightNow - andThen;
-					    //this function needs to know what "this" refers to so I don't have to do any tricky business
-					    //this function also needs to know WHAT it hit
-					    //just hitting something isn't good enough...
+						// rightNow = Date.now();
+					 //    d = rightNow - andThen;
+					 //    //this function needs to know what "this" refers to so I don't have to do any tricky business
+					 //    //this function also needs to know WHAT it hit
+					 //    //just hitting something isn't good enough...
 
-					    //I don't really like this approach, but here it is
-					    // console.log(whichWeapon);
+					 //    //I don't really like this approach, but here it is
+					 //    // console.log(whichWeapon);
 
-					    if (d > whichWeapon.fireRate) {
-					        andThen = rightNow - (d % whichWeapon.fireRate);
-					        var hitChance = Math.floor(Math.random() * whichWeapon.accuracy);
-					        if (hitChance > 30){
-					        	console.log("cannon A hits");
-					        	target.health = target.health - whichWeapon.damage;
-					        }
-					        if (target.health <=0){
-					        	//remove the target from the stage
-					        	console.log("she's dead, jim");
-					        	++monstersCaught;
-								reset();
-					        }
-					        // else {
-					        // 	console.log("cannon A misses");
-					        // }
-					    }
+					 //    if (d > whichWeapon.fireRate) {
+					 //        andThen = rightNow - (d % whichWeapon.fireRate);
+					 //        var hitChance = Math.floor(Math.random() * whichWeapon.accuracy);
+					 //        if (hitChance > 30){
+					 //        	console.log("cannon A hits");
+					 //        	target.health = target.health - whichWeapon.damage;
+					 //        }
+					 //        if (target.health <=0){
+					 //        	//remove the target from the stage
+					 //        	console.log("she's dead, jim");
+					 //        	++monstersCaught;
+						// 		reset();
+					 //        }
+					 //        // else {
+					 //        // 	console.log("cannon A misses");
+					 //        // }
+					 //    }
 
-					    globalID = requestAnimationFrame(whichWeapon.fireWeapon);
+					 //    globalID = requestAnimationFrame(whichWeapon.fireWeapon);
 					}
 				},
 				{
@@ -238,24 +238,24 @@
 					accuracy: 80,
 					active: "no",
 					fireWeapon: function(){
-						rightNow = Date.now();
-					    d = rightNow - andThen;
+						// rightNow = Date.now();
+					 //    d = rightNow - andThen;
 
-					    if (d > whichWeapon.fireRate) {
-					        andThen = rightNow - (d % whichWeapon.fireRate);
-					        var hitChance = Math.floor(Math.random() * whichWeapon.accuracy);
-					        if (hitChance > 30){
-					        	console.log("cannon B hits");
-					        	target.health = target.health - whichWeapon.damage;
-					        }
-					        if (target.health <=0){
-					        	console.log("she's dead, jim");
-					        	++monstersCaught;
-								reset();
-					        }
-					    }
+					 //    if (d > whichWeapon.fireRate) {
+					 //        andThen = rightNow - (d % whichWeapon.fireRate);
+					 //        var hitChance = Math.floor(Math.random() * whichWeapon.accuracy);
+					 //        if (hitChance > 30){
+					 //        	console.log("cannon B hits");
+					 //        	target.health = target.health - whichWeapon.damage;
+					 //        }
+					 //        if (target.health <=0){
+					 //        	console.log("she's dead, jim");
+					 //        	++monstersCaught;
+						// 		reset();
+					 //        }
+					 //    }
 
-					    globalID = requestAnimationFrame(whichWeapon.fireWeapon);
+					 //    globalID = requestAnimationFrame(whichWeapon.fireWeapon);
 					}
 				},
 			]
@@ -354,32 +354,27 @@
 					range: 128,
 					damage: 50,
 					accuracy: 50,
-					active: "no",
-					fireWeapon: function(){
-						rightNow = Date.now();
-					    d = rightNow - andThen;
+					active: "no"
+					// fireWeapon: function(target){
 
-					    if (d > whichWeapon.fireRate) {
-					    	console.log("cannon A is firing");
-					        andThen = rightNow - (d % whichWeapon.fireRate);
-					        var hitChance = Math.floor(Math.random() * whichWeapon.accuracy);
-					        if (hitChance > 30){
-					        	console.log("cannon A hits " + target.id);
-					        	target.health = target.health - whichWeapon.damage;
-					        }
-					        else {
-					        	console.log("Ooooh, cannon A has missed");
-					        }
-					        if (target.health <=0){
-					        	//remove the target from the stage
-					        	console.log(target.id + "'s dead, jim");
-					        	// ++monstersCaught;
-								// reset();
-					        }
-					    }
+					// 	console.log("cannon A is firing");
+					//         // andThen = rightNow - (d % whichWeapon.fireRate);
+					//         var hitChance = Math.floor(Math.random() * whichWeapon.accuracy);
+					//         if (hitChance > 30){
+					//         	console.log("cannon B hits " + target.id);
+					//         	target.health = target.health - whichWeapon.damage;
+					//         }
+					//         else {
+					//         	console.log("Ooooh, cannon A has missed");
+					//         }
+					//         if (target.health <=0){
+					//         	console.log(target.id + "'s dead, jim");
+					//         	// ++monstersCaught;
+					// 			// reset();
+					//         }
 
-					    globalID = requestAnimationFrame(whichWeapon.fireWeapon);
-					}
+					//     // globalID = requestAnimationFrame(whichWeapon.fireWeapon);
+					// }
 				},
 				{
 					x:364,
@@ -389,32 +384,32 @@
 					range: 224,
 					damage: 50,
 					accuracy: 80,
-					active: "no",
-					fireWeapon: function(){
-						// rightNow = Date.now();
-					    // d = rightNow - andThen;
-					    // console.log(target.id);
+					active: "no"
+					// fireWeapon: function(target){
+					// 	// rightNow = Date.now();
+					//     // d = rightNow - andThen;
+					//     // console.log(target.id);
 
-					    // if (d > whichWeapon.fireRate) {
-					    	console.log("cannon B is firing");
-					        // andThen = rightNow - (d % whichWeapon.fireRate);
-					        var hitChance = Math.floor(Math.random() * whichWeapon.accuracy);
-					        if (hitChance > 30){
-					        	console.log("cannon B hits " + target.id);
-					        	target.health = target.health - whichWeapon.damage;
-					        }
-					        else {
-					        	console.log("Ooooh, cannon B has missed");
-					        }
-					        if (target.health <=0){
-					        	console.log(target.id + "'s dead, jim");
-					        	// ++monstersCaught;
-								// reset();
-					        }
-					    // }
+					//     // if (d > whichWeapon.fireRate) {
+					//     	console.log("cannon B is firing");
+					//         // andThen = rightNow - (d % whichWeapon.fireRate);
+					//         var hitChance = Math.floor(Math.random() * whichWeapon.accuracy);
+					//         if (hitChance > 30){
+					//         	console.log("cannon B hits " + target.id);
+					//         	target.health = target.health - whichWeapon.damage;
+					//         }
+					//         else {
+					//         	console.log("Ooooh, cannon B has missed");
+					//         }
+					//         if (target.health <=0){
+					//         	console.log(target.id + "'s dead, jim");
+					//         	// ++monstersCaught;
+					// 			// reset();
+					//         }
+					//     // }
 
-					    // globalID = requestAnimationFrame(whichWeapon.fireWeapon);
-					}
+					//     // globalID = requestAnimationFrame(whichWeapon.fireWeapon);
+					// }
 				},
 			]
 		}
@@ -604,11 +599,24 @@
 					// && (enemyShip.parts.cannon[1].y + enemyDirectionHolder.y <= shipHit[j].y + directionHolder.y + 16)
 
 
+
 		//this still fires if the ships pull apart...
 		//doesn't allow for both to fire
+		//so this is WAY better; we're running everything off of the one requestAnimation
+		//now let's see why cannon A won't fire
+
+		//b is firing as if it had the speed of A
+		//A isn't cancelling!
+
 		for (var i=0; i<enemyShip.parts.cannon.length; i++){
 			//it's currently prioritizing the bow... so the higher numbered ship part
+			//or whatever...  i'm not a cop
+
+			// console.log(Date.now());
+			//why is only B firing when both are in range?
+			//this is the linchpin for this game
 			for (var j=0; j<shipHit.length; j++){
+
 				// console.log(shipHit[j]);
 				if (
 					(enemyShip.parts.cannon[i].x >= (shipHit[j].x + directionHolder.x - 32)) 
@@ -616,29 +624,58 @@
 					&&(enemyShip.parts.cannon[i].y + enemyDirectionHolder.y >= shipHit[j].y + directionHolder.y - 16) 
 					&& (enemyShip.parts.cannon[i].y + enemyDirectionHolder.y <= shipHit[j].y + directionHolder.y + 16)
 				){
-					if (enemyShip.parts.cannon[i].active == "no"){
-						enemyShip.parts.cannon[i].active = "yes";
-						target = shipHit[j];
-						whichWeapon = enemyShip.parts.cannon[i];
-						//I don't think I need to do it this way...
-						//I think I can make this much simpler
-						// console.log(enemyShip.parts.cannon[i].fireRate);
-						rightNow = Date.now();
-					    d = rightNow - andThen;
-					    console.log(d);
-						// globalID = requestAnimationFrame(enemyShip.parts.cannon[i].fireWeapon);
-						// break;
+					// console.log(i);
+
+					var andThen = Date.now();
+
+					//here's what I want to do!
+						//find the time when the cannon came into range
+						//find the difference between the cannon coming in range and now
+						//find the modulus based on the fireRate
+						//right?
+
+					//range works!
+					// console.log(Date.now());
+
+					// if (enemyShip.parts.cannon[i].active == "no"){
+					// 	// console.log(i);
+					// 	enemyShip.parts.cannon[i].active = "yes";
+
+						
+					// 	var rightNow = Date.now();
+					// 	var d = rightNow - andThen;
+
+					//     // console.log(andThen);
+
+					//     // console.log(d);
+					//     // console.log(d % enemyShip.parts.cannon[i].fireRate);
+
+					//     // console.log(rightNow - (d % enemyShip.parts.cannon[i].fireRate));
+
+					//     if (d > enemyShip.parts.cannon[i].fireRate) {
+					// 		andThen = rightNow - (d % enemyShip.parts.cannon[i].fireRate);
+
+					// 		console.log("cannon " + i + " is firing");
+
+					//         var hitChance = Math.floor(Math.random() * enemyShip.parts.cannon[i].accuracy);
+					//         if (hitChance > 30){
+					//         	// console.log("cannon " + i + " hits " + shipHit[j].id);
+					//         	shipHit[j].health = shipHit[j].health - enemyShip.parts.cannon[i].damage;
+					//         }
+					//         else {
+					//         	// console.log("Ooooh, cannon " + i + " has missed");
+					//         }
+					//         if (shipHit[j].health <=0){
+					//         	// console.log(shipHit[j].id + "'s dead, jim");
+					//         }
+					// 	}
 					}
-					break;
 				}
 				else {
 					if (enemyShip.parts.cannon[i].active == "yes"){
-						// window.cancelAnimationFrame(globalID);
 						enemyShip.parts.cannon[i].active = "no";
 					}
 				}
-				// i feel like this needs a "break" but I don't know where
-				// break;
 			}
 		}
 	};

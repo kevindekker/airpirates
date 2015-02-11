@@ -15,10 +15,21 @@
 		//fight other ships to earn coins
 		//repeat
 
+	//today
+		//add coins
+			//damage adds to coins
+			//make coins spill out
+				//then disappear
+				//random direction
+				//on click they should disappear and add to the total
+		//remove cannons from ship when deck breaks up
+
+
 	//next
 		//build BIGGER ships
 		//slow this thing down...
 		//add the balloons, take them out?
+			//balloons go instead of a piece of deck
 
 	//to do
 
@@ -61,6 +72,7 @@
 			//bonus for destruction
 				//only happens when pieces actually blow up
 
+
 		// x larger ship
 		//full screen game
 		// x moving the ship
@@ -89,6 +101,8 @@
 				// x background structure would hold it together
 			// destroy pieces
 				//pop coins now
+				//damaged pieces could also pop a coin?
+				//damaged pieces would look cool...
 
 		//ramming
 			//second iteration maybe
@@ -125,12 +139,24 @@
 					//wood
 					//steel
 					//iron
+					//include balloons in this for easier coding
+					//armored walls that can't be shot past from own side
 				//cannons
 					//fast firing
 					//double barrel
 					//bouncing bullets/grapeshot
 					//long range
 					//more than 1 space taken up?
+					//tough cannons
+					//sneaky cannons
+						//pop up when in range
+						//should have a short range but be super powerful
+						//1 range longer than a cheap-o cannon
+						//make these expensive
+					//flame throwers
+					//short range, cheap-o cannons
+					//I want SOOO many types...
+						//some that should be clearly better than others
 				//engines
 				//balloons
 				//"aerodynamic" pieces
@@ -139,6 +165,7 @@
 					//spikes
 					//super cannon
 			//repair sections of the ship
+				//cannons especially
 			//sell pieces
 			//sideboard
 			//value of ship
@@ -146,12 +173,14 @@
 			//weight
 			//drag and drop, snap to grid
 			//build by section
-				//other pieces become transparent?
+				//other layers become transparent? or harder to see
+				//going to be using the "render" a lot
 
 		// maybe this should be animated that the cannons come from below deck?
 			// this would be an extra level of surprise
 			// SPECIFIC guns should only come out when close enough
 				// oh that's sweet
+				//sneaky sneaky
 		//give this the feeling that the captain is turning all sorts of cranks and pulleys?  make it goofy?
 			//gears, cogs, etc
 
@@ -163,17 +192,26 @@
 			//flags
 			//reputation
 
-	// Create the canvas
+	//canvas setup
 	var canvas = document.createElement("canvas");
 	var ctx = canvas.getContext("2d");
-
-	//full screen why not?
 	canvas.width = 650;
 	canvas.height = 650;
-
 	document.body.appendChild(canvas);
 
+	//global variable
+	var baseTime = Date.now();
 	var andThen = Date.now();
+	var coinsAdded = 0;
+
+	//coins
+		//start at 0, no biggie
+		//more coins added for cannon destruction
+
+	// ++monstersCaught;
+
+
+	//motion
 
 	var battleInformation = {
 		x:0,
@@ -195,6 +233,12 @@
 		driftX:0,
 		driftY:0,
 	};
+
+
+	//objects
+	var coins = [];
+	var shipHit = [];
+	var enemyShipHit = [];
 
 	var clouds = [
 		{
@@ -234,11 +278,6 @@
 			//bow
 		}
 	]
-
-	var baseTime = Date.now();
-
-	var shipHit = [];
-	var enemyShipHit = [];
 
 	var ship = {
 		//these top values are all calculated PRE fight in the shipyard
@@ -348,10 +387,6 @@
 				        	// console.log("cannon A hits " + target.id);
 				        	target.health = target.health - this.damage;
 				        }
-				        if (target.health <=0){
-				        	// console.log(target.id + "'s dead, jim");
-				        }
-
 					}
 				},
 				{
@@ -371,10 +406,6 @@
 				        	// console.log("cannon B hits " + target.id);
 				        	target.health = target.health - this.damage;
 				        }
-				        if (target.health <=0){
-				        	// console.log(target.id + "'s dead, jim");
-				        }
-
 					}
 				},
 				{
@@ -393,10 +424,6 @@
 				        	// console.log("cannon C hits " + target.id);
 				        	target.health = target.health - this.damage;
 				        }
-				        if (target.health <=0){
-				        	// console.log(target.id + "'s dead, jim");
-				        }
-
 					}
 				},
 			]
@@ -416,78 +443,91 @@
 					id:1,
 					x:364,
 					y:128,
+					hasCannon:true,
 					health:1000
 				},
 				{
 					id:2,
 					x:364,
 					y:160,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:3,
 					x:364,
 					y:192,
+					hasCannon:true,
 					health:1000
 				},
 				{
 					id:4,
 					x:364,
 					y:224,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:5,
 					x:396,
 					y:96,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:6,
 					x:396,
 					y:128,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:7,
 					x:396,
 					y:160,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:8,
 					x:396,
 					y:192,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:9,
 					x:396,
 					y:224,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:10,
 					x:428,
 					y:128,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:11,
 					x:428,
 					y:160,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:12,
 					x:428,
 					y:192,
+					hasCannon:false,
 					health:1000
 				},
 				{
 					id:13,
 					x:428,
 					y:224,
+					hasCannon:false,
 					health:1000
 				}
 			],
@@ -568,6 +608,9 @@
 	}
 	
 	//find the hittable sections of the ships
+	//this should be done BEFORE the fight happens
+		//extra object coming into the fight?
+		//just make this a sub object?
 	shipHit = findTargets(ship, "right");
 	enemyShipHit = findTargets(enemyShip, "left");
 
@@ -611,6 +654,14 @@
 	};
 	cannonImage.src = "images/cannon.png";
 
+	// Coin image
+	var coinImageReady = false;
+	var coinImage = new Image();
+	coinImage.onload = function () {
+		coinImageReady = true;
+	};
+	coinImage.src = "images/coin.png";
+
 	// Handle keyboard controls
 	var keysDown = {};
 
@@ -630,7 +681,7 @@
 
 		// 0.5 is not cool
 		// this will move the background
-		battleInformation.y = battleInformation.y + 0.5;
+		// battleInformation.y = battleInformation.y + 0.5;
 
 		// wind or drift
 		// this drift needs to happen or it doesn't feel like a real thing
@@ -687,6 +738,7 @@
 
 		var driftRightNow = Date.now();
 		var driftD = driftRightNow - andThen;
+		//don't let it drift through the enemy ship
 		if (driftD > 75) {
 			andThen = driftRightNow - (driftD % 75);
 			if (enemyDirectionHolder.x > enemyDirectionHolder.driftX){
@@ -782,6 +834,31 @@
 						}
 						//do I need this break?
 						if(enemyShipHit[j].health <= 0){
+
+							//fifty coins for the deck
+				        	coinsAdded += 50;
+
+				        	if (enemyShipHit[j].hasCannon == true){
+				        		for(var k=0; k<enemyShip.parts.cannon.length; k++){
+				        			if ((enemyShipHit[j].x == enemyShip.parts.cannon[k].x) && (enemyShipHit[j].y == enemyShip.parts.cannon[k].y)){
+				        				enemyShip.parts.cannon.splice(k, 1);
+
+				        				coinsAdded += 500;
+				        				
+				        				//explode out the coins
+				        					//add coins to the existing object
+				        					//remove them when they get clicked
+				        					//how am I going to do onclick for this?
+				        					//can I do onclick for the items themselve?
+				        				for (var l = 0; l<5; l++){
+				        					// coins.push();
+				        					//push some coins to this thing
+				        				}
+				        			}
+				        		}
+				        	}
+
+				        	// console.log(target.id + "'s dead, jim");
 							// console.log(j + " is dead, jim");
 							enemyShipHit = findTargets(enemyShip, "left");
 							// console.log(enemyShipHit);
@@ -896,6 +973,7 @@
 		}
 
 		//need to make sure that there is a space under it, otherwise drop it off!
+			//removing it from the object instead
 		if (cannonImageReady) {
 			for (var i=0; i<ship.parts.cannon.length; i++){
 				ctx.drawImage(cannonImage, (ship.parts.cannon[i].x + directionHolder.x), (ship.parts.cannon[i].y + directionHolder.y));
@@ -905,6 +983,21 @@
 				ctx.drawImage(cannonImage, (enemyShip.parts.cannon[i].x + enemyDirectionHolder.x), (enemyShip.parts.cannon[i].y + enemyDirectionHolder.y));
 			}
 		}
+
+		if (coinImageReady) {
+			for (var i=0; i<coins.length; i++){
+				ctx.drawImage(coinImage, (coin[i].x), (coin[i].y));
+			}
+		}
+
+		//coins happen last
+
+		// coinsAdded
+		ctx.fillStyle = "rgb(250, 250, 250)";
+		ctx.font = "24px Helvetica";
+		ctx.textAlign = "left";
+		ctx.textBaseline = "top";
+		ctx.fillText("Coins: " + coinsAdded, 32, 32);
 	};
 
 	// The main game loop
